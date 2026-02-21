@@ -8,7 +8,7 @@ export 'fuzzy_time_locale.dart';
 ///
 /// Supports localization via [FuzzyTimeLocale.setLocale()].
 extension FuzzyTime on Duration {
-  /// Returns a human-friendly, fuzzy time description.
+  /// Returns a human-friendly, fuzzy future time description.
   ///
   /// Examples:
   /// - 30 seconds → "a few seconds"
@@ -16,59 +16,124 @@ extension FuzzyTime on Duration {
   /// - 7 minutes → "in about 5 minutes" (closer to 5 than 10)
   /// - 8 minutes → "in less than 10 minutes" (closer to 10 than 5)
   /// - 130 minutes → "in about 2 hours"
-  String get fuzzyTime => _fuzzyTime(locale: FuzzyTimeLocale.current);
+  String get fuzzyTime => _fuzzyFuture(locale: FuzzyTimeLocale.current);
 
-  /// Returns a shorter, compact fuzzy time description.
+  /// Returns a short, compact fuzzy future time description.
   ///
   /// Examples:
   /// - 7 minutes → "~5 min"
   /// - 8 minutes → "<10 min"
-  String get fuzzyTimeShort => _fuzzyTimeShort(locale: FuzzyTimeLocale.current);
+  String get fuzzyTimeShort =>
+      _fuzzyFutureShort(locale: FuzzyTimeLocale.current);
 
-  /// Internal implementation with explicit locale parameter.
-  String _fuzzyTime({required FuzzyTimeLocale locale}) {
+  /// Returns a human-friendly, fuzzy past time description.
+  ///
+  /// Examples:
+  /// - 7 minutes → "about 5 minutes ago"
+  /// - 8 minutes → "less than 10 minutes ago"
+  String get fuzzyTimePast => _fuzzyPast(locale: FuzzyTimeLocale.current);
+
+  /// Returns a short, compact fuzzy past time description.
+  ///
+  /// Examples:
+  /// - 7 minutes → "~5 min ago"
+  /// - 8 minutes → "<10 min ago"
+  String get fuzzyTimePastShort =>
+      _fuzzyPastShort(locale: FuzzyTimeLocale.current);
+
+  String _fuzzyFuture({required FuzzyTimeLocale locale}) {
     if (isNegative || inMilliseconds == 0) return locale.anyMoment;
+    return _fuzzyLong(
+      duration: this,
+      locale: locale,
+      prefixAbout: locale.prefixAbout,
+      prefixLessThan: locale.prefixLessThan,
+      zeroText: locale.anyMoment,
+      suffix: '',
+    );
+  }
 
-    final (value, unit, roundTo) = _normalizedValue;
+  String _fuzzyPast({required FuzzyTimeLocale locale}) {
+    final duration = isNegative ? -this : this;
+    return _fuzzyLong(
+      duration: duration,
+      locale: locale,
+      prefixAbout: locale.pastPrefixAbout,
+      prefixLessThan: locale.pastPrefixLessThan,
+      zeroText: locale.justNow,
+      suffix: locale.pastSuffix,
+    );
+  }
 
-    if (value < 1) {
-      return locale.fewSeconds;
-    }
+  String _fuzzyLong({
+    required Duration duration,
+    required FuzzyTimeLocale locale,
+    required String prefixAbout,
+    required String prefixLessThan,
+    required String zeroText,
+    required String suffix,
+  }) {
+    if (duration.inMilliseconds == 0) return zeroText;
+
+    final (value, unit, roundTo) = _normalizedValueFor(duration);
+
+    if (value < 1) return locale.fewSeconds;
 
     final lower = (value / roundTo).floor() * roundTo;
     final upper = lower + roundTo;
 
-    // Handle edge cases for very small values
     if (lower == 0) {
-      return unit == 'second'
-          ? locale.fewSeconds
-          : '${locale.prefixAbout} ${locale.formatUnit(roundTo, unit)}';
+      if (unit == 'second') return locale.fewSeconds;
+      return _joinWithSuffix(
+        '$prefixAbout ${locale.formatUnit(roundTo, unit)}',
+        suffix,
+      );
     }
 
     final distToLower = value - lower;
     final distToUpper = upper - value;
 
     final roundedValue = distToLower <= distToUpper ? lower : upper;
-    final prefix = distToLower <= distToUpper
-        ? locale.prefixAbout
-        : locale.prefixLessThan;
+    final prefix = distToLower <= distToUpper ? prefixAbout : prefixLessThan;
 
-    return '$prefix ${locale.formatUnit(roundedValue.round(), unit)}';
+    return _joinWithSuffix(
+      '$prefix ${locale.formatUnit(roundedValue.round(), unit)}',
+      suffix,
+    );
   }
 
-  /// Internal implementation for short format with explicit locale parameter.
-  String _fuzzyTimeShort({required FuzzyTimeLocale locale}) {
-    if (isNegative || inMilliseconds == 0) return 'soon';
+  String _fuzzyFutureShort({required FuzzyTimeLocale locale}) {
+    if (isNegative || inMilliseconds == 0) return locale.shortSoon;
+    return _fuzzyShort(duration: this, locale: locale, suffix: '');
+  }
 
-    final (value, unit, roundTo) = _normalizedValue;
+  String _fuzzyPastShort({required FuzzyTimeLocale locale}) {
+    final duration = isNegative ? -this : this;
+    return _fuzzyShort(
+      duration: duration,
+      locale: locale,
+      suffix: locale.shortPastSuffix,
+    );
+  }
 
-    if (value < 1) return _shortUnit('second', locale);
+  String _fuzzyShort({
+    required Duration duration,
+    required FuzzyTimeLocale locale,
+    required String suffix,
+  }) {
+    if (duration.inMilliseconds == 0) return locale.shortNow;
+
+    final (value, unit, roundTo) = _normalizedValueFor(duration);
+
+    if (value < 1) {
+      return _joinWithSuffix(_shortUnit('second', locale), suffix);
+    }
 
     final lower = (value / roundTo).floor() * roundTo;
     final upper = lower + roundTo;
 
     if (lower == 0) {
-      return _shortUnit(unit, locale);
+      return _joinWithSuffix(_shortUnit(unit, locale), suffix);
     }
 
     final distToLower = value - lower;
@@ -77,12 +142,20 @@ extension FuzzyTime on Duration {
     final roundedValue = distToLower <= distToUpper ? lower : upper;
     final prefix = distToLower <= distToUpper ? '~' : '<';
 
-    return '$prefix${roundedValue.round()}${_shortUnit(unit, locale)}';
+    return _joinWithSuffix(
+      '$prefix${roundedValue.round()}${_shortUnit(unit, locale)}',
+      suffix,
+    );
+  }
+
+  static String _joinWithSuffix(String value, String suffix) {
+    if (suffix.isEmpty) return value;
+    return '$value $suffix';
   }
 
   /// Returns normalized (value, unit, roundingStep) tuple.
-  (double, String, int) get _normalizedValue {
-    final totalSeconds = inSeconds;
+  static (double, String, int) _normalizedValueFor(Duration duration) {
+    final totalSeconds = duration.inSeconds;
 
     // Seconds: < 2 minutes
     if (totalSeconds < 120) {
@@ -105,13 +178,14 @@ extension FuzzyTime on Duration {
     final days = totalSeconds / 86400;
     if (days < 14) {
       return (days, 'day', 1);
-    } else if (days < 60) {
-      return (days / 7, 'week', 1);
-    } else if (days < 365) {
-      return (days / 30, 'month', 1);
-    } else {
-      return (days / 365, 'year', 1);
     }
+    if (days < 60) {
+      return (days / 7, 'week', 1);
+    }
+    if (days < 365) {
+      return (days / 30, 'month', 1);
+    }
+    return (days / 365, 'year', 1);
   }
 
   String _shortUnit(String unit, FuzzyTimeLocale locale) {

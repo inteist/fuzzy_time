@@ -4,13 +4,24 @@
 class FuzzyTimeLocale {
   final String code;
 
-  // Prefixes and suffixes
+  // Future prefixes
   final String prefixAbout;
   final String prefixLessThan;
-  final String anyMoment;
-  final String fewSeconds;
 
-  // Time units (singular and plural patterns)
+  // Past wrappers
+  final String pastPrefixAbout;
+  final String pastPrefixLessThan;
+  final String pastSuffix;
+
+  // Generic labels
+  final String anyMoment;
+  final String justNow;
+  final String fewSeconds;
+  final String shortSoon;
+  final String shortNow;
+  final String shortPastSuffix;
+
+  // Time units (localized base forms)
   final String second;
   final String minute;
   final String hour;
@@ -29,8 +40,15 @@ class FuzzyTimeLocale {
     required this.code,
     required this.prefixAbout,
     required this.prefixLessThan,
+    required this.pastPrefixAbout,
+    required this.pastPrefixLessThan,
+    required this.pastSuffix,
     required this.anyMoment,
+    required this.justNow,
     required this.fewSeconds,
+    required this.shortSoon,
+    required this.shortNow,
+    required this.shortPastSuffix,
     required this.second,
     required this.minute,
     required this.hour,
@@ -42,14 +60,6 @@ class FuzzyTimeLocale {
   });
 
   /// Set the global locale for fuzzy time formatting.
-  ///
-  /// Call this once at app startup to configure the desired language.
-  ///
-  /// Example:
-  /// ```dart
-  /// FuzzyTimeLocale.setLocale('es'); // Spanish
-  /// FuzzyTimeLocale.setLocale('fr'); // French
-  /// ```
   static void setLocale(String code) {
     _current = _getLocale(code);
   }
@@ -63,7 +73,7 @@ class FuzzyTimeLocale {
     if (code.startsWith('fr')) return french;
     if (code.startsWith('pt')) return portuguese;
     if (code.startsWith('de')) return german;
-    return english; // default
+    return english;
   }
 
   /// Default English locale
@@ -71,8 +81,15 @@ class FuzzyTimeLocale {
     code: 'en',
     prefixAbout: 'in about',
     prefixLessThan: 'in less than',
+    pastPrefixAbout: 'about',
+    pastPrefixLessThan: 'less than',
+    pastSuffix: 'ago',
     anyMoment: 'any moment now',
+    justNow: 'just now',
     fewSeconds: 'a few seconds',
+    shortSoon: 'soon',
+    shortNow: 'now',
+    shortPastSuffix: 'ago',
     second: 'second',
     minute: 'minute',
     hour: 'hour',
@@ -92,8 +109,15 @@ class FuzzyTimeLocale {
     code: 'es',
     prefixAbout: 'en unos',
     prefixLessThan: 'en menos de',
+    pastPrefixAbout: 'hace unos',
+    pastPrefixLessThan: 'hace menos de',
+    pastSuffix: '',
     anyMoment: 'en cualquier momento',
+    justNow: 'justo ahora',
     fewSeconds: 'unos segundos',
+    shortSoon: 'pronto',
+    shortNow: 'ahora',
+    shortPastSuffix: '',
     second: 'segundo',
     minute: 'minuto',
     hour: 'hora',
@@ -105,11 +129,11 @@ class FuzzyTimeLocale {
   );
 
   static String _spanishPlural(String unit, int count) {
-    // Spanish: most words add 's' for plural
     if (count == 1) return unit;
-    if (unit.endsWith('a')) return '${unit}s'; // hora -> horas
-    if (unit.endsWith('o')) return '${unit}s'; // minuto -> minutos
-    if (unit.endsWith('e')) return '${unit}s'; // mes -> meses
+    if (unit.endsWith('a')) return '${unit}s';
+    if (unit.endsWith('o')) return '${unit}s';
+    if (unit.endsWith('e')) return '${unit}s';
+    if (unit.endsWith('s')) return '${unit}es';
     return '${unit}s';
   }
 
@@ -118,8 +142,15 @@ class FuzzyTimeLocale {
     code: 'fr',
     prefixAbout: 'dans environ',
     prefixLessThan: 'dans moins de',
+    pastPrefixAbout: 'il y a environ',
+    pastPrefixLessThan: 'il y a moins de',
+    pastSuffix: '',
     anyMoment: 'à tout moment',
+    justNow: "à l'instant",
     fewSeconds: 'quelques secondes',
+    shortSoon: 'bientot',
+    shortNow: 'maintenant',
+    shortPastSuffix: '',
     second: 'seconde',
     minute: 'minute',
     hour: 'heure',
@@ -132,7 +163,6 @@ class FuzzyTimeLocale {
 
   static String _frenchPlural(String unit, int count) {
     if (count == 1) return unit;
-    // French: most words add 's' for plural (silent)
     if (unit.endsWith('s') || unit.endsWith('x')) return unit;
     return '${unit}s';
   }
@@ -142,8 +172,15 @@ class FuzzyTimeLocale {
     code: 'pt',
     prefixAbout: 'em cerca de',
     prefixLessThan: 'em menos de',
+    pastPrefixAbout: 'ha cerca de',
+    pastPrefixLessThan: 'ha menos de',
+    pastSuffix: '',
     anyMoment: 'a qualquer momento',
+    justNow: 'agora mesmo',
     fewSeconds: 'alguns segundos',
+    shortSoon: 'logo',
+    shortNow: 'agora',
+    shortPastSuffix: '',
     second: 'segundo',
     minute: 'minuto',
     hour: 'hora',
@@ -156,9 +193,9 @@ class FuzzyTimeLocale {
 
   static String _portuguesePlural(String unit, int count) {
     if (count == 1) return unit;
-    if (unit.endsWith('a')) return '${unit}s'; // hora -> horas
-    if (unit.endsWith('o')) return '${unit}s'; // minuto -> minutos
-    if (unit.endsWith('s')) return '${unit}es'; // mês -> meses
+    if (unit.endsWith('a')) return '${unit}s';
+    if (unit.endsWith('o')) return '${unit}s';
+    if (unit.endsWith('s')) return '${unit}es';
     return '${unit}s';
   }
 
@@ -167,8 +204,15 @@ class FuzzyTimeLocale {
     code: 'de',
     prefixAbout: 'in etwa',
     prefixLessThan: 'in weniger als',
+    pastPrefixAbout: 'vor etwa',
+    pastPrefixLessThan: 'vor weniger als',
+    pastSuffix: '',
     anyMoment: 'jeden Moment',
+    justNow: 'gerade eben',
     fewSeconds: 'ein paar Sekunden',
+    shortSoon: 'bald',
+    shortNow: 'jetzt',
+    shortPastSuffix: '',
     second: 'Sekunde',
     minute: 'Minute',
     hour: 'Stunde',
@@ -181,19 +225,33 @@ class FuzzyTimeLocale {
 
   static String _germanPlural(String unit, int count) {
     if (count == 1) return unit;
-    // German plurals vary, but 'en' is common
     if (unit == 'Stunde') return 'Stunden';
     if (unit == 'Minute') return 'Minuten';
     if (unit == 'Woche') return 'Wochen';
     if (unit == 'Monat') return 'Monate';
     if (unit == 'Jahr') return 'Jahre';
     if (unit == 'Tag') return 'Tage';
+    if (unit == 'Sekunde') return 'Sekunden';
     return unit;
   }
 
-  /// Helper to format a value with unit
+  String _unitLabel(String unit) {
+    return switch (unit) {
+      'second' => second,
+      'minute' => minute,
+      'hour' => hour,
+      'day' => day,
+      'week' => week,
+      'month' => month,
+      'year' => year,
+      _ => unit,
+    };
+  }
+
+  /// Helper to format a value with a localized unit.
   String formatUnit(int value, String unit) {
-    final plural = pluralize(unit, value);
-    return '$value $plural';
+    final localized = _unitLabel(unit);
+    final inflected = pluralize(localized, value);
+    return '$value $inflected';
   }
 }
