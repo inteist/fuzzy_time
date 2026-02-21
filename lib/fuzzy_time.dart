@@ -75,13 +75,15 @@ extension FuzzyTime on Duration {
 
     final (value, unit, roundTo) = _normalizedValueFor(duration);
 
-    if (value < 1) return locale.fewSeconds;
+    if (value < 1) return _joinWithSuffix(locale.fewSeconds, suffix);
 
     final lower = (value / roundTo).floor() * roundTo;
     final upper = lower + roundTo;
 
     if (lower == 0) {
-      if (unit == 'second') return locale.fewSeconds;
+      if (unit == 'second') {
+        return _joinWithSuffix(locale.fewSeconds, suffix);
+      }
       return _joinWithSuffix('$prefixLessThan ${locale.formatUnit(roundTo, unit)}', suffix);
     }
 
