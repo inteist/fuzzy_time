@@ -1,25 +1,25 @@
 /// Configuration for localizing fuzzy time strings.
 ///
-/// Each locale provides its own translations for time units and prefixes/suffixes.
+/// Supported locales:
+///  - English
+///  - Spanish
+///  - French
+///  - Portuguese
+///  - German
+///  - Italian
+///
+/// Each locale provides its own translations for time units and prefixes.
 class FuzzyTimeLocale {
   final String code;
 
-  // Future prefixes
+  // Prefixes
   final String prefixAbout;
   final String prefixLessThan;
 
-  // Past wrappers
-  final String pastPrefixAbout;
-  final String pastPrefixLessThan;
-  final String pastSuffix;
-
   // Generic labels
-  final String anyMoment;
-  final String justNow;
-  final String fewSeconds;
-  final String shortSoon;
+  final String now;
   final String shortNow;
-  final String shortPastSuffix;
+  final String fewSeconds;
 
   // Time units (localized base forms)
   final String second;
@@ -40,15 +40,9 @@ class FuzzyTimeLocale {
     required this.code,
     required this.prefixAbout,
     required this.prefixLessThan,
-    required this.pastPrefixAbout,
-    required this.pastPrefixLessThan,
-    required this.pastSuffix,
-    required this.anyMoment,
-    required this.justNow,
-    required this.fewSeconds,
-    required this.shortSoon,
+    required this.now,
     required this.shortNow,
-    required this.shortPastSuffix,
+    required this.fewSeconds,
     required this.second,
     required this.minute,
     required this.hour,
@@ -79,17 +73,11 @@ class FuzzyTimeLocale {
   /// Default English locale
   static const english = FuzzyTimeLocale(
     code: 'en',
-    prefixAbout: 'in about',
-    prefixLessThan: 'in less than',
-    pastPrefixAbout: 'about',
-    pastPrefixLessThan: 'less than',
-    pastSuffix: 'ago',
-    anyMoment: 'any moment now',
-    justNow: 'just now',
-    fewSeconds: 'a few seconds',
-    shortSoon: 'soon',
+    prefixAbout: 'about',
+    prefixLessThan: 'less than',
+    now: 'now',
     shortNow: 'now',
-    shortPastSuffix: 'ago',
+    fewSeconds: 'a few seconds',
     second: 'second',
     minute: 'minute',
     hour: 'hour',
@@ -107,17 +95,11 @@ class FuzzyTimeLocale {
   /// Spanish locale
   static const spanish = FuzzyTimeLocale(
     code: 'es',
-    prefixAbout: 'en unos',
-    prefixLessThan: 'en menos de',
-    pastPrefixAbout: 'hace unos',
-    pastPrefixLessThan: 'hace menos de',
-    pastSuffix: '',
-    anyMoment: 'en cualquier momento',
-    justNow: 'justo ahora',
-    fewSeconds: 'unos segundos',
-    shortSoon: 'pronto',
+    prefixAbout: 'unos',
+    prefixLessThan: 'menos de',
+    now: 'ahora',
     shortNow: 'ahora',
-    shortPastSuffix: '',
+    fewSeconds: 'unos segundos',
     second: 'segundo',
     minute: 'minuto',
     hour: 'hora',
@@ -140,17 +122,11 @@ class FuzzyTimeLocale {
   /// French locale
   static const french = FuzzyTimeLocale(
     code: 'fr',
-    prefixAbout: 'dans environ',
-    prefixLessThan: 'dans moins de',
-    pastPrefixAbout: 'il y a environ',
-    pastPrefixLessThan: 'il y a moins de',
-    pastSuffix: '',
-    anyMoment: 'à tout moment',
-    justNow: "à l'instant",
-    fewSeconds: 'quelques secondes',
-    shortSoon: 'bientot',
+    prefixAbout: 'environ',
+    prefixLessThan: 'moins de',
+    now: 'maintenant',
     shortNow: 'maintenant',
-    shortPastSuffix: '',
+    fewSeconds: 'quelques secondes',
     second: 'seconde',
     minute: 'minute',
     hour: 'heure',
@@ -170,17 +146,11 @@ class FuzzyTimeLocale {
   /// Portuguese locale
   static const portuguese = FuzzyTimeLocale(
     code: 'pt',
-    prefixAbout: 'em cerca de',
-    prefixLessThan: 'em menos de',
-    pastPrefixAbout: 'ha cerca de',
-    pastPrefixLessThan: 'ha menos de',
-    pastSuffix: '',
-    anyMoment: 'a qualquer momento',
-    justNow: 'agora mesmo',
-    fewSeconds: 'alguns segundos',
-    shortSoon: 'logo',
+    prefixAbout: 'cerca de',
+    prefixLessThan: 'menos de',
+    now: 'agora',
     shortNow: 'agora',
-    shortPastSuffix: '',
+    fewSeconds: 'alguns segundos',
     second: 'segundo',
     minute: 'minuto',
     hour: 'hora',
@@ -202,17 +172,11 @@ class FuzzyTimeLocale {
   /// German locale
   static const german = FuzzyTimeLocale(
     code: 'de',
-    prefixAbout: 'in etwa',
-    prefixLessThan: 'in weniger als',
-    pastPrefixAbout: 'vor etwa',
-    pastPrefixLessThan: 'vor weniger als',
-    pastSuffix: '',
-    anyMoment: 'jeden Moment',
-    justNow: 'gerade eben',
-    fewSeconds: 'ein paar Sekunden',
-    shortSoon: 'bald',
+    prefixAbout: 'etwa',
+    prefixLessThan: 'weniger als',
+    now: 'jetzt',
     shortNow: 'jetzt',
-    shortPastSuffix: '',
+    fewSeconds: 'ein paar Sekunden',
     second: 'Sekunde',
     minute: 'Minute',
     hour: 'Stunde',
