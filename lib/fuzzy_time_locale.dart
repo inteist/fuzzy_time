@@ -1,6 +1,6 @@
 ///
 /// Supported locales for fuzzy time string localization.
-/// Using standard BCP-47 language tags
+/// Using ISO 639-1 (2 letter codes) language codes.
 ///
 enum FuzzyLocale {
   /// English
