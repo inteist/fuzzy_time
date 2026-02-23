@@ -94,7 +94,7 @@ void main() {
     test('past datetime format using past wrapper', () {
       final past = DateTime.now().subtract(const Duration(minutes: 5));
       expect(FuzzyTime.from(past), 'about 5 minutes ago');
-      expect(FuzzyTime.shortFrom(past), '~5 min ago');
+      expect(FuzzyTime.from(past, form: FuzzyForm.short), '~5 min ago');
     });
 
     test('future datetime format using future wrapper', () {
@@ -103,19 +103,19 @@ void main() {
         FuzzyTime.from(future),
         'in less than 2 hours',
       ); // due to execution time diff, it evaluates to < 2 hours instead of exact
-      expect(FuzzyTime.shortFrom(future), 'in <2 ho');
+      expect(FuzzyTime.from(future, form: FuzzyForm.short), 'in <2 ho');
     });
 
     test('exact now circumvents wrappers', () {
       final now = DateTime.now();
       expect(FuzzyTime.from(now), 'now');
-      expect(FuzzyTime.shortFrom(now), 'now');
+      expect(FuzzyTime.from(now, form: FuzzyForm.short), 'now');
     });
 
     test('a few seconds circumvents wrappers (long only)', () {
       final justNow = DateTime.now().subtract(const Duration(seconds: 4));
       expect(FuzzyTime.from(justNow), 'a few seconds');
-      expect(FuzzyTime.shortFrom(justNow), '<10s ago');
+      expect(FuzzyTime.from(justNow, form: FuzzyForm.short), '<10s ago');
     });
   });
 }

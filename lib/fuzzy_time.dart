@@ -159,53 +159,47 @@ extension FuzzyDurationExtension on Duration {
   }
 }
 
+/// Defines the format of the output string for fuzzy time.
+enum FuzzyForm {
+  /// The short, compact format (e.g. "~5 min ago").
+  short,
+
+  /// The long, more conversational format (e.g. "about 5 minutes ago").
+  long,
+}
+
 /// An API for generating human-friendly, "fuzzy" time descriptions
 /// relative to the current time (`DateTime.now()`).
 class FuzzyTime {
-  /// Returns a human-friendly, fuzzy time description relative to now.
+  //
+  /// Returns a human-friendly, fuzzy time description of passed DateTime relative to now.
   ///
   /// Examples:
-  /// - `FuzzyTime.from(DateTime(2023, 1, 1))`
+  ///
   /// - A DateTime 5 minutes ago → "5 minutes ago"
   /// - A DateTime 5 minutes from now → "in 5 minutes"
-  static String from(DateTime time) {
+  static String from(DateTime time, {FuzzyForm form = FuzzyForm.long}) {
     final now = DateTime.now();
     final diff = time.difference(now);
 
     final locale = FuzzyTimeLocale.current;
-    final amount = diff.fuzzyTime;
+    final isShort = form == FuzzyForm.short;
+    final amount = isShort ? diff.fuzzyTimeShort : diff.fuzzyTime;
 
-    // If it resolves exactly to "now" or "ahora" etc, return as-is
-    if (diff.inMilliseconds == 0 || amount == locale.now || amount == locale.fewSeconds) {
+    // Special cases that should not be wrapped in past/future
+    // and should be returned as-is
+    if (diff.inMilliseconds == 0 ||
+        amount == locale.now ||
+        amount == locale.fewSeconds ||
+        amount == locale.shortNow ||
+        amount == '<1s') {
       return amount;
     }
 
     if (time.isBefore(now)) {
-      return locale.pastWrapper(amount);
+      return isShort ? locale.pastWrapperShort(amount) : locale.pastWrapper(amount);
     } else {
-      return locale.futureWrapper(amount);
-    }
-  }
-
-  /// Returns a short, compact fuzzy time description relative to now.
-  ///
-  /// Examples:
-  /// - `FuzzyTime.shortFrom(DateTime(2023, 1, 1))`
-  static String shortFrom(DateTime time) {
-    final now = DateTime.now();
-    final diff = time.difference(now);
-
-    final locale = FuzzyTimeLocale.current;
-    final amount = diff.fuzzyTimeShort;
-
-    if (diff.inMilliseconds == 0 || amount == locale.shortNow || amount == '<1s') {
-      return amount;
-    }
-
-    if (time.isBefore(now)) {
-      return locale.pastWrapperShort(amount);
-    } else {
-      return locale.futureWrapperShort(amount);
+      return isShort ? locale.futureWrapperShort(amount) : locale.futureWrapper(amount);
     }
   }
 }
