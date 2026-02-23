@@ -1,5 +1,6 @@
 ## 0.3.4
-* added usage example
+* added basic usage example
+* added localization usage example
 
 ## 0.3.1  -- 0.3.3
 * created logo and a banner
