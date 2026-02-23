@@ -15,7 +15,7 @@ Add `fuzzy_time` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  fuzzy_time:
+  fuzzy_time: ^0.3.0
 ```
 
 Import it in your Dart code:
