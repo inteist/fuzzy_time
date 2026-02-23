@@ -6,20 +6,23 @@
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
         font-weight: 800;
         font-size: 96px;
-        fill: #0f172a;
+        fill: #f8fafc;
         letter-spacing: -3px;
       }
       .subtitle {
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
         font-weight: 500;
         font-size: 32px;
-        fill: #64748b;
+        fill: #94a3b8;
+      }
+      .accent {
+        fill: #8b5cf6;
       }
     </style>
     
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f8fafc" /> <!-- slate-50 -->
-      <stop offset="100%" stop-color="#e2e8f0" /> <!-- slate-200 -->
+      <stop offset="0%" stop-color="#0f172a" /> <!-- slate-900 -->
+      <stop offset="100%" stop-color="#020617" /> <!-- slate-950 -->
     </linearGradient>
 
     <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -28,19 +31,17 @@
     </linearGradient>
 
     <radialGradient id="glowBlue" cx="50%" cy="50%" r="50%">
-      <!-- Subtle glow for light background -->
-      <stop offset="0%" stop-color="rgba(59, 130, 246, 0.12)"/>
+      <stop offset="0%" stop-color="rgba(59, 130, 246, 0.15)"/>
       <stop offset="100%" stop-color="rgba(59, 130, 246, 0)"/>
     </radialGradient>
     
     <radialGradient id="glowPurple" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="rgba(139, 92, 246, 0.12)"/>
+      <stop offset="0%" stop-color="rgba(139, 92, 246, 0.15)"/>
       <stop offset="100%" stop-color="rgba(139, 92, 246, 0)"/>
     </radialGradient>
     
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <!-- Softer, higher-elevation shadow suitable for bright backgrounds -->
-      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#0f172a" flood-opacity="0.15"/>
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#000000" flood-opacity="0.6"/>
     </filter>
   </defs>
 
@@ -52,8 +53,8 @@
   <circle cx="950" cy="200" r="400" fill="url(#glowPurple)" />
 
   <!-- Abstract Waves -->
-  <path d="M0,400 Q300,320 600,380 T1200,340 L1200,400 L0,400 Z" fill="rgba(139, 92, 246, 0.04)" />
-  <path d="M0,400 Q400,280 800,360 T1200,300 L1200,400 L0,400 Z" fill="rgba(59, 130, 246, 0.04)" />
+  <path d="M0,400 Q300,320 600,380 T1200,340 L1200,400 L0,400 Z" fill="rgba(139, 92, 246, 0.05)" />
+  <path d="M0,400 Q400,280 800,360 T1200,300 L1200,400 L0,400 Z" fill="rgba(59, 130, 246, 0.05)" />
 
   <!-- Logo Group -->
   <g transform="translate(180, 72) scale(0.5)" filter="url(#shadow)">
@@ -79,16 +80,7 @@
 
   <!-- Typography -->
   <g transform="translate(520, 210)">
-    <text x="0" y="0" class="title">fuzzy</text>
-    
-    <!-- The exact tilde from the logo scaled to fit font size -->
-    <!-- Extracted core cubic path curve mathematically centered at (0,0) -->
-    <path d="M -100 0 C -66 -86, -30 -36, 0 0 S 66 86, 100 0" 
-          transform="translate(290, -28) scale(0.35)"
-          stroke="#a78bfa" stroke-width="36" stroke-linecap="round" fill="none" />
-          
-    <text x="345" y="0" class="title">time</text>
-    
+    <text x="0" y="0" class="title">fuzzy<tspan class="accent">_</tspan>time</text>
     <text x="6" y="56" class="subtitle">Human-friendly time descriptions</text>
   </g>
 </svg>
