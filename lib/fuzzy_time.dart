@@ -1,6 +1,15 @@
 import 'fuzzy_time_locale.dart';
 export 'fuzzy_time_locale.dart';
 
+/// Defines the format of the output string for fuzzy time.
+enum FuzzyForm {
+  /// The short, compact format (e.g. "~5 min ago").
+  short,
+
+  /// The long, more conversational format (e.g. "about 5 minutes ago").
+  long,
+}
+
 /// Extension on [Duration] that provides human-friendly, "fuzzy" time descriptions.
 ///
 /// Instead of showing exact times, rounds to conversational values using "about"
@@ -9,6 +18,14 @@ export 'fuzzy_time_locale.dart';
 /// Supports localization via [FuzzyTimeLocale.setLocale()].
 extension FuzzyDurationExtension on Duration {
   /// Returns a human-friendly, fuzzy time description.
+  /// uses [fuzzyTime] with [FuzzyForm.long] by default.
+  String get fuzzy => fuzzyTime();
+
+  /// Returns a human-friendly, fuzzy time description.
+  /// uses [fuzzyTime] with [FuzzyForm.short] parameter.
+  String get fuzzyShort => fuzzyTime(form: FuzzyForm.short);
+
+  /// Returns a human-friendly, fuzzy time description.
   ///
   /// Examples:
   /// - 30 seconds → "a few seconds"
@@ -16,30 +33,28 @@ extension FuzzyDurationExtension on Duration {
   /// - 7 minutes → "about 5 minutes" (closer to 5 than 10)
   /// - 8 minutes → "less than 10 minutes" (closer to 10 than 5)
   /// - 130 minutes → "about 2 hours"
-  String get fuzzyTime => _fuzzy(locale: FuzzyTimeLocale.current);
-
-  /// Returns a short, compact fuzzy time description.
   ///
-  /// Examples:
-  /// - 7 minutes → "~5 min"
-  /// - 8 minutes → "<10 min"
-  String get fuzzyTimeShort => _fuzzyShort(locale: FuzzyTimeLocale.current);
+  /// Use [form] to specify [FuzzyForm.short] or [FuzzyForm.long] (default).
+  String fuzzyTime({FuzzyForm form = FuzzyForm.long}) {
+    final locale = FuzzyTimeLocale.current;
+    final isShort = form == FuzzyForm.short;
 
-  String _fuzzy({required FuzzyTimeLocale locale}) {
     final duration = isNegative ? -this : this;
-    if (duration.inMilliseconds == 0) return locale.now;
+    if (duration.inMilliseconds == 0) return isShort ? locale.shortNow : locale.now;
 
     final (value, unit, roundTo) = _normalizedValueFor(duration);
 
-    if (value < 1) return locale.fewSeconds;
+    if (value < 1) {
+      if (isShort) return '<1${_shortUnit('second', locale)}';
+      return locale.fewSeconds;
+    }
 
     final lower = (value / roundTo).floor() * roundTo;
     final upper = lower + roundTo;
 
     if (lower == 0) {
-      if (unit == 'second') {
-        return locale.fewSeconds;
-      }
+      if (isShort) return '<$roundTo${_shortUnit(unit, locale)}';
+      if (unit == 'second') return locale.fewSeconds;
       return '${locale.prefixLessThan} ${locale.formatUnit(roundTo, unit)}';
     }
 
@@ -63,51 +78,13 @@ extension FuzzyDurationExtension on Duration {
       finalUnit = 'year';
     }
 
-    final prefix = distToLower < distToUpper ? locale.prefixAbout : locale.prefixLessThan;
-
-    return '$prefix ${locale.formatUnit(roundedValue.round(), finalUnit)}';
-  }
-
-  String _fuzzyShort({required FuzzyTimeLocale locale}) {
-    final duration = isNegative ? -this : this;
-    if (duration.inMilliseconds == 0) return locale.shortNow;
-
-    final (value, unit, roundTo) = _normalizedValueFor(duration);
-
-    if (value < 1) {
-      return '<1${_shortUnit('second', locale)}';
+    if (isShort) {
+      final prefix = distToLower < distToUpper ? '~' : '<';
+      return '$prefix${roundedValue.round()}${_shortUnit(finalUnit, locale)}';
+    } else {
+      final prefix = distToLower < distToUpper ? locale.prefixAbout : locale.prefixLessThan;
+      return '$prefix ${locale.formatUnit(roundedValue.round(), finalUnit)}';
     }
-
-    final lower = (value / roundTo).floor() * roundTo;
-    final upper = lower + roundTo;
-
-    if (lower == 0) {
-      return '<$roundTo${_shortUnit(unit, locale)}';
-    }
-
-    final distToLower = value - lower;
-    final distToUpper = upper - value;
-
-    var roundedValue = distToLower < distToUpper ? lower : upper;
-    var finalUnit = unit;
-
-    if (roundedValue == 60 && unit == 'second') {
-      roundedValue = 1;
-      finalUnit = 'minute';
-    } else if (roundedValue == 60 && unit == 'minute') {
-      roundedValue = 1;
-      finalUnit = 'hour';
-    } else if (roundedValue == 24 && unit == 'hour') {
-      roundedValue = 1;
-      finalUnit = 'day';
-    } else if (roundedValue == 12 && unit == 'month') {
-      roundedValue = 1;
-      finalUnit = 'year';
-    }
-
-    final prefix = distToLower < distToUpper ? '~' : '<';
-
-    return '$prefix${roundedValue.round()}${_shortUnit(finalUnit, locale)}';
   }
 
   /// Returns normalized (value, unit, roundingStep) tuple.
@@ -159,15 +136,6 @@ extension FuzzyDurationExtension on Duration {
   }
 }
 
-/// Defines the format of the output string for fuzzy time.
-enum FuzzyForm {
-  /// The short, compact format (e.g. "~5 min ago").
-  short,
-
-  /// The long, more conversational format (e.g. "about 5 minutes ago").
-  long,
-}
-
 /// An API for generating human-friendly, "fuzzy" time descriptions
 /// relative to the current time (`DateTime.now()`).
 class FuzzyTime {
@@ -184,7 +152,7 @@ class FuzzyTime {
 
     final locale = FuzzyTimeLocale.current;
     final isShort = form == FuzzyForm.short;
-    final amount = isShort ? diff.fuzzyTimeShort : diff.fuzzyTime;
+    final amount = diff.fuzzyTime(form: form);
 
     // Special cases that should not be wrapped in past/future
     // and should be returned as-is

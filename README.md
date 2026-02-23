@@ -3,12 +3,11 @@
 A simple, dependency-free Flutter/Dart package that converts `DateTime` and `Duration` objects into human-friendly, "fuzzy" conversational strings like "about 5 minutes ago" or "in less than 2 hours".
 
 ## Features
-- **Relative DateTime Formatting**: Generate relative timestamps (e.g. "5 minutes ago", "in a few seconds", "about 2 weeks ago") using the static `FuzzyTime` API e.g. `FuzzyTime.from(DateTime.now().subtract(const Duration(minutes: 5)))`.
-  - supports times both in the past and in the future (relative to `DateTime.now()`)
-- **Standalone Duration Formatting**: (via Duration extension) - convert strict durations into readable approximations e.g. `Duration(minutes: 5).fuzzyTime` will return "about 5 minutes".
-- **Short & Long Forms**: Support for both conversational (long) formats and compact (short) formats (e.g., "about 5 minutes ago" or "~5 min ago").
-- **Built-in Localization**: Out-of-the-box support for multiple languages using strongly-typed enums (English, Spanish, French, Portuguese, German, Italian).
-- **Zero Third-Party Dependencies**: Extremely lightweight and fast.
+- **Relative DateTime Formatting**: Generate relative timestamps (e.g. "5 minutes ago", "in a few seconds") using the static `FuzzyTime.from(dateTime)` API.
+- **Duration Extensions**: Quick access to conversational strings via `.fuzzy` and `.fuzzyShort` getters on any `Duration`.
+- **Short & Long Forms**: Switch between conversational styles (e.g., "about 5 minutes ago") and compact styles (e.g., "~5 min ago").
+- **Built-in Localization**: Support for English, Spanish, French, Portuguese, German, and Italian.
+- **Dependency Free**: Lightweight, pure Dart implementation with zero third-party dependencies.
 
 ## Getting started
 
@@ -32,34 +31,41 @@ import 'package:fuzzy_time/fuzzy_time.dart';
 Use the static `FuzzyTime` API to convert a `DateTime` relative to `DateTime.now()`. It automatically identifies whether the time is in the past or future and applies the appropriate tense ("ago" or "in").
 
 ```dart
-// Past times
 final past = DateTime.now().subtract(const Duration(minutes: 5));
-
-print(FuzzyTime.from(past)); 
-// Output: "about 5 minutes ago"
-
-print(FuzzyTime.from(past, form: FuzzyForm.short)); 
-// Output: "~5 min ago"
-
-// Future times
 final future = DateTime.now().add(const Duration(hours: 2));
 
-print(FuzzyTime.from(future)); 
-// Output: "in about 2 hours"
+// Quick usage (Long form)
+print(FuzzyTime.from(past)); // "about 5 minutes ago"
+print(FuzzyTime.from(future)); // "in about 2 hours"
+
+// Short form
+print(FuzzyTime.from(past, form: FuzzyForm.short)); // "~5 min ago"
+
+// Explicit form
+print(FuzzyTime.from(past, form: FuzzyForm.long)); // "about 5 minutes ago"
 ```
 
 ### Duration Length (`Duration`)
 
 If you just need to know the length of a `Duration` without the past/future tense context, use the included **extension** on `Duration`.
 
+The most convenient way is to use the `.fuzzy` and `.fuzzyShort` getters.
+
 ```dart
 final duration = const Duration(minutes: 42);
 
-print(duration.fuzzyTime);
-// Output: "about 40 minutes"
+// Long conversational form
+print(duration.fuzzy); // "about 40 minutes"
 
-print(duration.fuzzyTimeShort);
-// Output: "~40 min"
+// Short compact form
+print(duration.fuzzyShort); // "~40 min"
+
+// Functional form (with options)
+print(duration.fuzzyTime(form: FuzzyForm.long)); // "about 40 minutes"
+print(duration.fuzzyTime(form: FuzzyForm.short)); // "~40 min"
+
+// Defaults to long form
+print(duration.fuzzyTime()); // "about 40 minutes"
 ```
 
 ## Localization
