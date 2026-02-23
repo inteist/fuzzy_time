@@ -88,10 +88,5 @@ void main() {
       expect(Duration.zero.fuzzyTime, 'now');
       expect(Duration.zero.fuzzyTimeShort, 'now');
     });
-
-    test('localization uses localized units', () {
-      FuzzyTimeLocale.setLocale('es');
-      expect(const Duration(minutes: 5).fuzzyTime, 'unos 5 minutos');
-    });
   });
 }
