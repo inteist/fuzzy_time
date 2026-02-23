@@ -4,7 +4,7 @@ import 'package:fuzzy_time/fuzzy_time.dart';
 
 void main() {
   tearDown(() {
-    FuzzyTimeLocale.setLocale('en');
+    FuzzyTimeLocale.setLocale(FuzzyLocale.en);
   });
 
   group('Edge cases', () {

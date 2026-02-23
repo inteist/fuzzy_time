@@ -1,3 +1,30 @@
+///
+/// Supported locales for fuzzy time string localization.
+/// Using standard BCP-47 language tags
+///
+enum FuzzyLocale {
+  /// English
+  en('en'),
+
+  /// Spanish
+  es('es'),
+
+  /// French
+  fr('fr'),
+
+  /// Portuguese
+  pt('pt'),
+
+  /// German
+  de('de'),
+
+  /// Italian
+  it('it');
+
+  final String code;
+  const FuzzyLocale(this.code);
+}
+
 /// Configuration for localizing fuzzy time strings.
 ///
 /// Supported locales:
@@ -10,7 +37,7 @@
 ///
 /// Each locale provides its own translations for time units and prefixes.
 class FuzzyTimeLocale {
-  final String code;
+  final FuzzyLocale locale;
 
   // Prefixes
   final String prefixAbout;
@@ -43,7 +70,7 @@ class FuzzyTimeLocale {
   static FuzzyTimeLocale _current = english;
 
   const FuzzyTimeLocale({
-    required this.code,
+    required this.locale,
     required this.prefixAbout,
     required this.prefixLessThan,
     required this.futureWrapper,
@@ -64,25 +91,28 @@ class FuzzyTimeLocale {
   });
 
   /// Set the global locale for fuzzy time formatting.
-  static void setLocale(String code) {
-    _current = _getLocale(code);
+  static void setLocale(FuzzyLocale locale) {
+    _current = _getLocale(locale);
   }
 
   /// Get the current locale.
   static FuzzyTimeLocale get current => _current;
 
-  /// Get a locale by code.
-  static FuzzyTimeLocale _getLocale(String code) {
-    if (code.startsWith('es')) return spanish;
-    if (code.startsWith('fr')) return french;
-    if (code.startsWith('pt')) return portuguese;
-    if (code.startsWith('de')) return german;
-    return english;
+  /// Get a locale configuration by enum.
+  static FuzzyTimeLocale _getLocale(FuzzyLocale locale) {
+    return switch (locale) {
+      FuzzyLocale.es => spanish,
+      FuzzyLocale.fr => french,
+      FuzzyLocale.pt => portuguese,
+      FuzzyLocale.de => german,
+      FuzzyLocale.it => italian,
+      FuzzyLocale.en => english,
+    };
   }
 
   /// Default English locale
   static const english = FuzzyTimeLocale(
-    code: 'en',
+    locale: FuzzyLocale.en,
     prefixAbout: 'about',
     prefixLessThan: 'less than',
     futureWrapper: _englishFuture,
@@ -111,7 +141,7 @@ class FuzzyTimeLocale {
 
   /// Spanish locale
   static const spanish = FuzzyTimeLocale(
-    code: 'es',
+    locale: FuzzyLocale.es,
     prefixAbout: 'unos',
     prefixLessThan: 'menos de',
     futureWrapper: _spanishFuture,
@@ -145,7 +175,7 @@ class FuzzyTimeLocale {
 
   /// French locale
   static const french = FuzzyTimeLocale(
-    code: 'fr',
+    locale: FuzzyLocale.fr,
     prefixAbout: 'environ',
     prefixLessThan: 'moins de',
     futureWrapper: _frenchFuture,
@@ -176,7 +206,7 @@ class FuzzyTimeLocale {
 
   /// Portuguese locale
   static const portuguese = FuzzyTimeLocale(
-    code: 'pt',
+    locale: FuzzyLocale.pt,
     prefixAbout: 'cerca de',
     prefixLessThan: 'menos de',
     futureWrapper: _portugueseFuture,
@@ -209,7 +239,7 @@ class FuzzyTimeLocale {
 
   /// German locale
   static const german = FuzzyTimeLocale(
-    code: 'de',
+    locale: FuzzyLocale.de,
     prefixAbout: 'etwa',
     prefixLessThan: 'weniger als',
     futureWrapper: _germanFuture,
@@ -241,6 +271,43 @@ class FuzzyTimeLocale {
     if (unit == 'Jahr') return 'Jahre';
     if (unit == 'Tag') return 'Tage';
     if (unit == 'Sekunde') return 'Sekunden';
+    return unit;
+  }
+
+  /// Italian locale
+  static const italian = FuzzyTimeLocale(
+    locale: FuzzyLocale.it,
+    prefixAbout: 'circa',
+    prefixLessThan: 'meno di',
+    futureWrapper: _italianFuture,
+    pastWrapper: _italianPast,
+    futureWrapperShort: _italianFuture,
+    pastWrapperShort: _italianPast,
+    now: 'ora',
+    shortNow: 'ora',
+    fewSeconds: 'alcuni secondi',
+    second: 'secondo',
+    minute: 'minuto',
+    hour: 'ora',
+    day: 'giorno',
+    week: 'settimana',
+    month: 'mese',
+    year: 'anno',
+    pluralize: _italianPlural,
+  );
+
+  static String _italianFuture(String time) => 'tra $time';
+  static String _italianPast(String time) => '$time fa';
+
+  static String _italianPlural(String unit, int count) {
+    if (count == 1) return unit;
+    if (unit == 'secondo') return 'secondi';
+    if (unit == 'minuto') return 'minuti';
+    if (unit == 'ora') return 'ore';
+    if (unit == 'giorno') return 'giorni';
+    if (unit == 'settimana') return 'settimane';
+    if (unit == 'mese') return 'mesi';
+    if (unit == 'anno') return 'anni';
     return unit;
   }
 

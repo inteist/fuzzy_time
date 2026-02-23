@@ -4,11 +4,11 @@ import 'package:fuzzy_time/fuzzy_time.dart';
 
 void main() {
   setUp(() {
-    FuzzyTimeLocale.setLocale('pt');
+    FuzzyTimeLocale.setLocale(FuzzyLocale.pt);
   });
 
   tearDown(() {
-    FuzzyTimeLocale.setLocale('en');
+    FuzzyTimeLocale.setLocale(FuzzyLocale.en);
   });
 
   group('Portuguese locale', () {
