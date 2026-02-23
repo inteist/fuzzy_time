@@ -91,31 +91,31 @@ void main() {
   });
 
   group('DateTime extension relative to now', () {
-    test('past datetimes format using past wrapper', () {
+    test('past datetime format using past wrapper', () {
       final past = DateTime.now().subtract(const Duration(minutes: 5));
-      expect(past.fuzzyTimeFromNow, 'about 5 minutes ago');
-      expect(past.fuzzyTimeFromNowShort, '~5 min ago');
+      expect(FuzzyTime.from(past), 'about 5 minutes ago');
+      expect(FuzzyTime.shortFrom(past), '~5 min ago');
     });
 
-    test('future datetimes format using future wrapper', () {
+    test('future datetime format using future wrapper', () {
       final future = DateTime.now().add(const Duration(hours: 2));
       expect(
-        future.fuzzyTimeFromNow,
+        FuzzyTime.from(future),
         'in less than 2 hours',
       ); // due to execution time diff, it evaluates to < 2 hours instead of exact
-      expect(future.fuzzyTimeFromNowShort, 'in <2 ho');
+      expect(FuzzyTime.shortFrom(future), 'in <2 ho');
     });
 
     test('exact now circumvents wrappers', () {
       final now = DateTime.now();
-      expect(now.fuzzyTimeFromNow, 'now');
-      expect(now.fuzzyTimeFromNowShort, 'now');
+      expect(FuzzyTime.from(now), 'now');
+      expect(FuzzyTime.shortFrom(now), 'now');
     });
 
     test('a few seconds circumvents wrappers (long only)', () {
       final justNow = DateTime.now().subtract(const Duration(seconds: 4));
-      expect(justNow.fuzzyTimeFromNow, 'a few seconds');
-      expect(justNow.fuzzyTimeFromNowShort, '<10s ago');
+      expect(FuzzyTime.from(justNow), 'a few seconds');
+      expect(FuzzyTime.shortFrom(justNow), '<10s ago');
     });
   });
 }

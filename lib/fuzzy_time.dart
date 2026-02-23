@@ -7,7 +7,7 @@ export 'fuzzy_time_locale.dart';
 /// (when closer to the lower bound) or "less than" (when closer to the upper bound).
 ///
 /// Supports localization via [FuzzyTimeLocale.setLocale()].
-extension FuzzyTime on Duration {
+extension FuzzyDurationExtension on Duration {
   /// Returns a human-friendly, fuzzy time description.
   ///
   /// Examples:
@@ -159,17 +159,18 @@ extension FuzzyTime on Duration {
   }
 }
 
-/// Extension on [DateTime] that provides human-friendly, "fuzzy" time descriptions
+/// An API for generating human-friendly, "fuzzy" time descriptions
 /// relative to the current time (`DateTime.now()`).
-extension FuzzyDateTime on DateTime {
+class FuzzyTime {
   /// Returns a human-friendly, fuzzy time description relative to now.
   ///
   /// Examples:
+  /// - `FuzzyTime.from(DateTime(2023, 1, 1))`
   /// - A DateTime 5 minutes ago → "5 minutes ago"
   /// - A DateTime 5 minutes from now → "in 5 minutes"
-  String get fuzzyTimeFromNow {
+  static String from(DateTime time) {
     final now = DateTime.now();
-    final diff = difference(now);
+    final diff = time.difference(now);
 
     final locale = FuzzyTimeLocale.current;
     final amount = diff.fuzzyTime;
@@ -179,7 +180,7 @@ extension FuzzyDateTime on DateTime {
       return amount;
     }
 
-    if (isBefore(now)) {
+    if (time.isBefore(now)) {
       return locale.pastWrapper(amount);
     } else {
       return locale.futureWrapper(amount);
@@ -187,9 +188,12 @@ extension FuzzyDateTime on DateTime {
   }
 
   /// Returns a short, compact fuzzy time description relative to now.
-  String get fuzzyTimeFromNowShort {
+  ///
+  /// Examples:
+  /// - `FuzzyTime.shortFrom(DateTime(2023, 1, 1))`
+  static String shortFrom(DateTime time) {
     final now = DateTime.now();
-    final diff = difference(now);
+    final diff = time.difference(now);
 
     final locale = FuzzyTimeLocale.current;
     final amount = diff.fuzzyTimeShort;
@@ -198,7 +202,7 @@ extension FuzzyDateTime on DateTime {
       return amount;
     }
 
-    if (isBefore(now)) {
+    if (time.isBefore(now)) {
       return locale.pastWrapperShort(amount);
     } else {
       return locale.futureWrapperShort(amount);
