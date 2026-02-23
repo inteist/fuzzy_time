@@ -158,3 +158,50 @@ extension FuzzyTime on Duration {
     };
   }
 }
+
+/// Extension on [DateTime] that provides human-friendly, "fuzzy" time descriptions
+/// relative to the current time (`DateTime.now()`).
+extension FuzzyDateTime on DateTime {
+  /// Returns a human-friendly, fuzzy time description relative to now.
+  ///
+  /// Examples:
+  /// - A DateTime 5 minutes ago → "5 minutes ago"
+  /// - A DateTime 5 minutes from now → "in 5 minutes"
+  String get fuzzyTimeFromNow {
+    final now = DateTime.now();
+    final diff = difference(now);
+
+    final locale = FuzzyTimeLocale.current;
+    final amount = diff.fuzzyTime;
+
+    // If it resolves exactly to "now" or "ahora" etc, return as-is
+    if (diff.inMilliseconds == 0 || amount == locale.now || amount == locale.fewSeconds) {
+      return amount;
+    }
+
+    if (isBefore(now)) {
+      return locale.pastWrapper(amount);
+    } else {
+      return locale.futureWrapper(amount);
+    }
+  }
+
+  /// Returns a short, compact fuzzy time description relative to now.
+  String get fuzzyTimeFromNowShort {
+    final now = DateTime.now();
+    final diff = difference(now);
+
+    final locale = FuzzyTimeLocale.current;
+    final amount = diff.fuzzyTimeShort;
+
+    if (diff.inMilliseconds == 0 || amount == locale.shortNow || amount == '<1s') {
+      return amount;
+    }
+
+    if (isBefore(now)) {
+      return locale.pastWrapperShort(amount);
+    } else {
+      return locale.futureWrapperShort(amount);
+    }
+  }
+}

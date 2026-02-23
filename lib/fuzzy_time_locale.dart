@@ -16,6 +16,12 @@ class FuzzyTimeLocale {
   final String prefixAbout;
   final String prefixLessThan;
 
+  // Wrappers for past/future (used by DateTime methods)
+  final String Function(String) futureWrapper;
+  final String Function(String) pastWrapper;
+  final String Function(String) futureWrapperShort;
+  final String Function(String) pastWrapperShort;
+
   // Generic labels
   final String now;
   final String shortNow;
@@ -40,6 +46,10 @@ class FuzzyTimeLocale {
     required this.code,
     required this.prefixAbout,
     required this.prefixLessThan,
+    required this.futureWrapper,
+    required this.pastWrapper,
+    required this.futureWrapperShort,
+    required this.pastWrapperShort,
     required this.now,
     required this.shortNow,
     required this.fewSeconds,
@@ -75,6 +85,10 @@ class FuzzyTimeLocale {
     code: 'en',
     prefixAbout: 'about',
     prefixLessThan: 'less than',
+    futureWrapper: _englishFuture,
+    pastWrapper: _englishPast,
+    futureWrapperShort: _englishFuture,
+    pastWrapperShort: _englishPast,
     now: 'now',
     shortNow: 'now',
     fewSeconds: 'a few seconds',
@@ -88,6 +102,9 @@ class FuzzyTimeLocale {
     pluralize: _englishPlural,
   );
 
+  static String _englishFuture(String time) => 'in $time';
+  static String _englishPast(String time) => '$time ago';
+
   static String _englishPlural(String unit, int count) {
     return count == 1 ? unit : '${unit}s';
   }
@@ -97,6 +114,10 @@ class FuzzyTimeLocale {
     code: 'es',
     prefixAbout: 'unos',
     prefixLessThan: 'menos de',
+    futureWrapper: _spanishFuture,
+    pastWrapper: _spanishPast,
+    futureWrapperShort: _spanishFuture,
+    pastWrapperShort: _spanishPast,
     now: 'ahora',
     shortNow: 'ahora',
     fewSeconds: 'unos segundos',
@@ -109,6 +130,9 @@ class FuzzyTimeLocale {
     year: 'año',
     pluralize: _spanishPlural,
   );
+
+  static String _spanishFuture(String time) => 'en $time';
+  static String _spanishPast(String time) => 'hace $time';
 
   static String _spanishPlural(String unit, int count) {
     if (count == 1) return unit;
@@ -124,6 +148,10 @@ class FuzzyTimeLocale {
     code: 'fr',
     prefixAbout: 'environ',
     prefixLessThan: 'moins de',
+    futureWrapper: _frenchFuture,
+    pastWrapper: _frenchPast,
+    futureWrapperShort: _frenchFuture,
+    pastWrapperShort: _frenchPast,
     now: 'maintenant',
     shortNow: 'maintenant',
     fewSeconds: 'quelques secondes',
@@ -137,6 +165,9 @@ class FuzzyTimeLocale {
     pluralize: _frenchPlural,
   );
 
+  static String _frenchFuture(String time) => 'dans $time';
+  static String _frenchPast(String time) => 'il y a $time';
+
   static String _frenchPlural(String unit, int count) {
     if (count == 1) return unit;
     if (unit.endsWith('s') || unit.endsWith('x')) return unit;
@@ -148,6 +179,10 @@ class FuzzyTimeLocale {
     code: 'pt',
     prefixAbout: 'cerca de',
     prefixLessThan: 'menos de',
+    futureWrapper: _portugueseFuture,
+    pastWrapper: _portuguesePast,
+    futureWrapperShort: _portugueseFuture,
+    pastWrapperShort: _portuguesePast,
     now: 'agora',
     shortNow: 'agora',
     fewSeconds: 'alguns segundos',
@@ -160,6 +195,9 @@ class FuzzyTimeLocale {
     year: 'ano',
     pluralize: _portuguesePlural,
   );
+
+  static String _portugueseFuture(String time) => 'em $time';
+  static String _portuguesePast(String time) => 'há $time';
 
   static String _portuguesePlural(String unit, int count) {
     if (count == 1) return unit;
@@ -174,6 +212,10 @@ class FuzzyTimeLocale {
     code: 'de',
     prefixAbout: 'etwa',
     prefixLessThan: 'weniger als',
+    futureWrapper: _germanFuture,
+    pastWrapper: _germanPast,
+    futureWrapperShort: _germanFuture,
+    pastWrapperShort: _germanPast,
     now: 'jetzt',
     shortNow: 'jetzt',
     fewSeconds: 'ein paar Sekunden',
@@ -186,6 +228,9 @@ class FuzzyTimeLocale {
     year: 'Jahr',
     pluralize: _germanPlural,
   );
+
+  static String _germanFuture(String time) => 'in $time';
+  static String _germanPast(String time) => 'vor $time';
 
   static String _germanPlural(String unit, int count) {
     if (count == 1) return unit;
