@@ -2,8 +2,6 @@
   <img src="banner.svg" alt="fuzzy_time banner" />
 </p>
 
-# fuzzy_time
-
 A simple, dependency-free Flutter/Dart package that converts `DateTime` and `Duration` objects into human-friendly, "fuzzy" conversational strings like "about 5 minutes ago" or "in less than 2 hours".
 
 ## Features
