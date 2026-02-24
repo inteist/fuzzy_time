@@ -1,6 +1,6 @@
 name: fuzzy_time
-description: "A simple, dependency-free Flutter/Dart package that converts DateTime and Duration objects into human-friendly conversational fuzzy strings."
-version: 0.3.4
+description: "A simple, dependency-free Flutter/Dart package that converts DateTime and Duration objects into human-friendly conversational fuzzy time strings e.g. 'less than 5 minutes ago', 'in about 2 hours', 'just now', etc."
+version: 0.3.5
 homepage: https://inteist.com/
 repository: https://github.com/inteist/fuzzy_time
 
