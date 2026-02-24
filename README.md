@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/inteist/fuzzy_time/refs/heads/main/banner.svg" alt="fuzzy_time banner" />
 </p>
 
-A simple, dependency-free Flutter/Dart package that converts `DateTime` and `Duration` objects into human-friendly, "fuzzy" conversational strings like "about 5 minutes ago" or "in less than 2 hours".
+A simple, dependency-free Flutter/Dart package that converts `DateTime` and `Duration` objects into human-friendly, "fuzzy" conversational strings like "about 5 minutes ago" or "in less than 2 hours". Similar to time ago, time since and similar packages but with more flexible and natural language. Supports past times and future times. Both long and short forms – see [Usage](#usage) section and is localized in multiple languages - see [Localization](#localization) section.
 
 ## Features
 - **Relative DateTime Formatting**: Generate relative timestamps (e.g. "5 minutes ago", "in a few seconds") using the static `FuzzyTime.from(dateTime)` API.
