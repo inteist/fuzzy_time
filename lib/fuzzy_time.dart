@@ -40,12 +40,13 @@ extension FuzzyDurationExtension on Duration {
     final isShort = form == FuzzyForm.short;
 
     final duration = isNegative ? -this : this;
-    if (duration.inMilliseconds == 0) return isShort ? locale.shortNow : locale.now;
+    if (duration.inMilliseconds == 0)
+      return isShort ? locale.shortNow : locale.now;
 
     final (value, unit, roundTo) = _normalizedValueFor(duration);
 
     if (value < 1) {
-      if (isShort) return '<1${_shortUnit('second', locale)}';
+      if (isShort) return '<1${_shortUnit(FuzzyTimeUnit.second, locale)}';
       return locale.fewSeconds;
     }
 
@@ -54,7 +55,7 @@ extension FuzzyDurationExtension on Duration {
 
     if (lower == 0) {
       if (isShort) return '<$roundTo${_shortUnit(unit, locale)}';
-      if (unit == 'second') return locale.fewSeconds;
+      if (unit == FuzzyTimeUnit.second) return locale.fewSeconds;
       return '${locale.prefixLessThan} ${locale.formatUnit(roundTo, unit)}';
     }
 
@@ -64,75 +65,70 @@ extension FuzzyDurationExtension on Duration {
     var roundedValue = distToLower < distToUpper ? lower : upper;
     var finalUnit = unit;
 
-    if (roundedValue == 60 && unit == 'second') {
+    if (roundedValue == 60 && unit == FuzzyTimeUnit.second) {
       roundedValue = 1;
-      finalUnit = 'minute';
-    } else if (roundedValue == 60 && unit == 'minute') {
+      finalUnit = FuzzyTimeUnit.minute;
+    } else if (roundedValue == 60 && unit == FuzzyTimeUnit.minute) {
       roundedValue = 1;
-      finalUnit = 'hour';
-    } else if (roundedValue == 24 && unit == 'hour') {
+      finalUnit = FuzzyTimeUnit.hour;
+    } else if (roundedValue == 24 && unit == FuzzyTimeUnit.hour) {
       roundedValue = 1;
-      finalUnit = 'day';
-    } else if (roundedValue == 12 && unit == 'month') {
+      finalUnit = FuzzyTimeUnit.day;
+    } else if (roundedValue == 12 && unit == FuzzyTimeUnit.month) {
       roundedValue = 1;
-      finalUnit = 'year';
+      finalUnit = FuzzyTimeUnit.year;
     }
 
     if (isShort) {
       final prefix = distToLower < distToUpper ? '~' : '<';
       return '$prefix${roundedValue.round()}${_shortUnit(finalUnit, locale)}';
     } else {
-      final prefix = distToLower < distToUpper ? locale.prefixAbout : locale.prefixLessThan;
+      final prefix = distToLower < distToUpper
+          ? locale.prefixAbout
+          : locale.prefixLessThan;
       return '$prefix ${locale.formatUnit(roundedValue.round(), finalUnit)}';
     }
   }
 
   /// Returns normalized (value, unit, roundingStep) tuple.
-  static (double, String, int) _normalizedValueFor(Duration duration) {
+  static (double, FuzzyTimeUnit, int) _normalizedValueFor(Duration duration) {
     final totalSeconds = duration.inSeconds;
 
     // Seconds: < 2 minutes
     if (totalSeconds < 120) {
-      return (totalSeconds.toDouble(), 'second', 10);
+      return (totalSeconds.toDouble(), FuzzyTimeUnit.second, 10);
     }
 
     // Minutes: < 1 hour
     if (totalSeconds < 3600) {
       final minutes = totalSeconds / 60;
-      return (minutes, 'minute', minutes >= 30 ? 10 : 5);
+      return (minutes, FuzzyTimeUnit.minute, minutes >= 30 ? 10 : 5);
     }
 
     // Hours: < 1 day
     if (totalSeconds < 86400) {
       final hours = totalSeconds / 3600;
-      return (hours, 'hour', hours >= 6 ? 6 : 1);
+      return (hours, FuzzyTimeUnit.hour, hours >= 6 ? 6 : 1);
     }
 
     // Days: >= 1 day
     final days = totalSeconds / 86400;
     if (days < 14) {
-      return (days, 'day', 1);
+      return (days, FuzzyTimeUnit.day, 1);
     }
     if (days < 28) {
-      return (days / 7, 'week', 1);
+      return (days / 7, FuzzyTimeUnit.week, 1);
     }
     if (days < 365) {
-      return (days / 30, 'month', 1);
+      return (days / 30, FuzzyTimeUnit.month, 1);
     }
-    return (days / 365, 'year', 1);
+    return (days / 365, FuzzyTimeUnit.year, 1);
   }
 
-  String _shortUnit(String unit, FuzzyTimeLocale locale) {
-    return switch (unit) {
-      'second' => 's',
-      'minute' => ' ${locale.minute.substring(0, 3)}',
-      'hour' => ' ${locale.hour.substring(0, 2)}',
-      'day' => 'd',
-      'week' => 'w',
-      'month' => 'mo',
-      'year' => 'y',
-      _ => '',
-    };
+  String _shortUnit(FuzzyTimeUnit unit, FuzzyTimeLocale locale) {
+    final label = locale.shortUnitLabel(unit);
+    final separator = label.length > 1 ? ' ' : '';
+    return '$separator$label';
   }
 }
 
@@ -165,9 +161,13 @@ class FuzzyTime {
     }
 
     if (time.isBefore(now)) {
-      return isShort ? locale.pastWrapperShort(amount) : locale.pastWrapper(amount);
+      return isShort
+          ? locale.pastWrapperShort(amount)
+          : locale.pastWrapper(amount);
     } else {
-      return isShort ? locale.futureWrapperShort(amount) : locale.futureWrapper(amount);
+      return isShort
+          ? locale.futureWrapperShort(amount)
+          : locale.futureWrapper(amount);
     }
   }
 }

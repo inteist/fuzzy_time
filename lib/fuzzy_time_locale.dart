@@ -25,6 +25,9 @@ enum FuzzyLocale {
   const FuzzyLocale(this.code);
 }
 
+/// Canonical unit keys used by fuzzy-time formatters.
+enum FuzzyTimeUnit { second, minute, hour, day, week, month, year }
+
 /// Configuration for localizing fuzzy time strings.
 ///
 /// Supported locales:
@@ -63,6 +66,15 @@ class FuzzyTimeLocale {
   final String month;
   final String year;
 
+  // Time unit short labels used by compact formatting.
+  final String secondShort;
+  final String minuteShort;
+  final String hourShort;
+  final String dayShort;
+  final String weekShort;
+  final String monthShort;
+  final String yearShort;
+
   // Pluralization function (some languages have complex plural rules)
   final String Function(String unit, int count) pluralize;
 
@@ -87,6 +99,13 @@ class FuzzyTimeLocale {
     required this.week,
     required this.month,
     required this.year,
+    required this.secondShort,
+    required this.minuteShort,
+    required this.hourShort,
+    required this.dayShort,
+    required this.weekShort,
+    required this.monthShort,
+    required this.yearShort,
     required this.pluralize,
   });
 
@@ -129,6 +148,13 @@ class FuzzyTimeLocale {
     week: 'week',
     month: 'month',
     year: 'year',
+    secondShort: 's',
+    minuteShort: 'min',
+    hourShort: 'hr',
+    dayShort: 'd',
+    weekShort: 'w',
+    monthShort: 'mo',
+    yearShort: 'y',
     pluralize: _englishPlural,
   );
 
@@ -158,6 +184,13 @@ class FuzzyTimeLocale {
     week: 'semana',
     month: 'mes',
     year: 'año',
+    secondShort: 's',
+    minuteShort: 'min',
+    hourShort: 'h',
+    dayShort: 'd',
+    weekShort: 'sem',
+    monthShort: 'mes',
+    yearShort: 'a',
     pluralize: _spanishPlural,
   );
 
@@ -192,6 +225,13 @@ class FuzzyTimeLocale {
     week: 'semaine',
     month: 'mois',
     year: 'an',
+    secondShort: 's',
+    minuteShort: 'min',
+    hourShort: 'h',
+    dayShort: 'j',
+    weekShort: 'sem',
+    monthShort: 'mois',
+    yearShort: 'a',
     pluralize: _frenchPlural,
   );
 
@@ -223,6 +263,13 @@ class FuzzyTimeLocale {
     week: 'semana',
     month: 'mês',
     year: 'ano',
+    secondShort: 's',
+    minuteShort: 'min',
+    hourShort: 'h',
+    dayShort: 'd',
+    weekShort: 'sem',
+    monthShort: 'm',
+    yearShort: 'a',
     pluralize: _portuguesePlural,
   );
 
@@ -256,6 +303,13 @@ class FuzzyTimeLocale {
     week: 'Woche',
     month: 'Monat',
     year: 'Jahr',
+    secondShort: 's',
+    minuteShort: 'min',
+    hourShort: 'std',
+    dayShort: 't',
+    weekShort: 'w',
+    monthShort: 'mo',
+    yearShort: 'j',
     pluralize: _germanPlural,
   );
 
@@ -293,6 +347,13 @@ class FuzzyTimeLocale {
     week: 'settimana',
     month: 'mese',
     year: 'anno',
+    secondShort: 's',
+    minuteShort: 'min',
+    hourShort: 'h',
+    dayShort: 'g',
+    weekShort: 'sett',
+    monthShort: 'm',
+    yearShort: 'a',
     pluralize: _italianPlural,
   );
 
@@ -311,21 +372,33 @@ class FuzzyTimeLocale {
     return unit;
   }
 
-  String _unitLabel(String unit) {
+  String _unitLabel(FuzzyTimeUnit unit) {
     return switch (unit) {
-      'second' => second,
-      'minute' => minute,
-      'hour' => hour,
-      'day' => day,
-      'week' => week,
-      'month' => month,
-      'year' => year,
-      _ => unit,
+      FuzzyTimeUnit.second => second,
+      FuzzyTimeUnit.minute => minute,
+      FuzzyTimeUnit.hour => hour,
+      FuzzyTimeUnit.day => day,
+      FuzzyTimeUnit.week => week,
+      FuzzyTimeUnit.month => month,
+      FuzzyTimeUnit.year => year,
+    };
+  }
+
+  /// Helper to return a localized short unit label.
+  String shortUnitLabel(FuzzyTimeUnit unit) {
+    return switch (unit) {
+      FuzzyTimeUnit.second => secondShort,
+      FuzzyTimeUnit.minute => minuteShort,
+      FuzzyTimeUnit.hour => hourShort,
+      FuzzyTimeUnit.day => dayShort,
+      FuzzyTimeUnit.week => weekShort,
+      FuzzyTimeUnit.month => monthShort,
+      FuzzyTimeUnit.year => yearShort,
     };
   }
 
   /// Helper to format a value with a localized unit.
-  String formatUnit(int value, String unit) {
+  String formatUnit(int value, FuzzyTimeUnit unit) {
     final localized = _unitLabel(unit);
     final inflected = pluralize(localized, value);
     return '$value $inflected';
