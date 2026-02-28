@@ -21,7 +21,10 @@ void main() {
     test('midpoints resolve to upper threshold (< versus <= tie-breaker)', () {
       // 35 minutes is midway between 30 and 40 (rounding step 10)
       expect(const Duration(minutes: 35).fuzzyTime(), 'less than 40 minutes');
-      expect(const Duration(minutes: 35).fuzzyTime(form: FuzzyForm.short), '<40 min');
+      expect(
+        const Duration(minutes: 35).fuzzyTime(form: FuzzyForm.short),
+        '<40 min',
+      );
 
       // 9 hours is midway between 6 and 12 (rounding step 6)
       expect(const Duration(hours: 9).fuzzyTime(), 'less than 12 hours');
@@ -29,16 +32,25 @@ void main() {
 
     test('lower == 0 triggers correctly (less than first interval)', () {
       expect(const Duration(minutes: 2).fuzzyTime(), 'less than 5 minutes');
-      expect(const Duration(minutes: 2).fuzzyTime(form: FuzzyForm.short), '<5 min');
+      expect(
+        const Duration(minutes: 2).fuzzyTime(form: FuzzyForm.short),
+        '<5 min',
+      );
 
       // Seconds specifically return "a few seconds" when lower == 0 (under 10s)
       expect(const Duration(seconds: 4).fuzzyTime(), 'a few seconds');
-      expect(const Duration(seconds: 4).fuzzyTime(form: FuzzyForm.short), '<10s');
+      expect(
+        const Duration(seconds: 4).fuzzyTime(form: FuzzyForm.short),
+        '<10s',
+      );
     });
 
     test('values less than 1 fallback format properly', () {
       expect(const Duration(milliseconds: 500).fuzzyTime(), 'a few seconds');
-      expect(const Duration(milliseconds: 500).fuzzyTime(form: FuzzyForm.short), '<1s');
+      expect(
+        const Duration(milliseconds: 500).fuzzyTime(form: FuzzyForm.short),
+        '<1s',
+      );
     });
 
     test('hour intervals jump correctly (quarter day bins)', () {
@@ -62,7 +74,10 @@ void main() {
     });
 
     test('hours (varied)', () {
-      expect(const Duration(hours: 2).fuzzyTime(), 'about 2 hours'); // step is 1
+      expect(
+        const Duration(hours: 2).fuzzyTime(),
+        'about 2 hours',
+      ); // step is 1
       expect(const Duration(hours: 5).fuzzyTime(), 'about 5 hours');
       expect(const Duration(hours: 7).fuzzyTime(), 'about 6 hours');
       expect(const Duration(hours: 10).fuzzyTime(), 'less than 12 hours');
@@ -113,7 +128,7 @@ void main() {
         FuzzyTime.from(future),
         'in less than 2 hours',
       ); // due to execution time diff, it evaluates to < 2 hours instead of exact
-      expect(FuzzyTime.from(future, form: FuzzyForm.short), 'in <2 ho');
+      expect(FuzzyTime.from(future, form: FuzzyForm.short), 'in <2 hr');
     });
 
     test('exact now circumvents wrappers', () {
